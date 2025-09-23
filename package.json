@@ -1,0 +1,38 @@
+{
+  "name": "rdf-shacl-commons",
+  "version": "0.1.0",
+  "description": "An RDF and SHACL typescript utility package",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],  
+  "keywords": [
+    "RDF",
+    "SHACL"
+  ],
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build:lib": "tsc",
+    "build:bundle": "webpack --config webpack.config.js --mode production",
+    "build": "npm run clean && npm run build:lib",
+    "start": "webpack serve --hot --config webpack.config.js --mode development",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "thomas.francart@sparna.fr",
+  "license": "LGPL-3.0-or-later",
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2",
+    "html-webpack-plugin": "^5.6.3",
+    "webpack-dashboard": "^3.3.8",
+    "ts-loader": "^9.5.1",
+    "stream-browserify": "^3.0.0"
+  },
+  "dependencies": {
+    "rdf-data-factory": "^1.1.2",
+    "rdf-stores": "^1.0.0",
+    "rdf-parse": "^2.1.0"
+  }
+}
