@@ -12,6 +12,10 @@
     "RDF",
     "SHACL"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sparna-git/rdf-shacl-commons"
+  },
   "scripts": {
     "clean": "rm -rf dist",
     "build:lib": "tsc",
@@ -20,7 +24,13 @@
     "start": "webpack serve --hot --config webpack.config.js --mode development",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "thomas.francart@sparna.fr",
+  "author": {
+    "name": "Thomas Francart",
+    "url": "https://github.com/tfrancart"
+  },
+  "bugs": {
+    "url": "https://github.com/sparna-git/rdf-shacl-commons/issues"
+  },
   "license": "LGPL-3.0-or-later",
   "devDependencies": {
     "ts-node": "^10.9.2",
