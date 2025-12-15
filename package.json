@@ -1,6 +1,6 @@
 {
   "name": "rdf-shacl-commons",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "An RDF and SHACL typescript utility package",
   "main": "dist/index.js",
   "module": "dist/index.js",
