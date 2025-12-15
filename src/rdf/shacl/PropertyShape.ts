@@ -12,6 +12,7 @@ import { VOLIPI } from '../vocabularies/VOLIPI';
 import { SKOS } from '../vocabularies/SKOS';
 import { SearchWidgetIfc, SearchWidgetRegistry } from './SearchWidgets';
 import { ShapeFactory } from './ShaclFactory';
+import { NodeShape } from './NodeShape';
 
 const factory = new DataFactory();
 
@@ -63,6 +64,33 @@ export class PropertyShape extends Shape {
     getShMaxCount(): number | undefined {
       let maxCount = this.graph.readSinglePropertyAsNumber(this.resource, SH.MAX_COUNT);
       return (maxCount !== undefined) ? maxCount : undefined;
+    }
+
+    /**
+     * @returns the sh:qualifiedMinCount number if defined, otherwise undefined
+     */
+    getShQualifiedMinCount(): number | undefined {
+      let minCount = this.graph.readSinglePropertyAsNumber(this.resource, SH.MIN_COUNT);
+      return (minCount !== undefined) ? minCount : undefined;
+    }
+
+    /**
+     * @returns the sh:qualifiedMaxCount number if defined, otherwise undefined
+     */
+    getShQualifiedMaxCount(): number | undefined {
+      let maxCount = this.graph.readSinglePropertyAsNumber(this.resource, SH.MAX_COUNT);
+      return (maxCount !== undefined) ? maxCount : undefined;
+    }
+
+    /**
+     * @returns the sh:qualifiedValueShape if defined, otherwise undefined
+     */
+    getShQualifiedValueShape(): NodeShape | undefined {
+      let qvs:NodeShape|undefined = 
+            this.graph.readProperty(this.resource, SH.QUALIFIED_VALUE_SHAPE)
+            .map(node => ShapeFactory.buildShape(node, this.graph) as NodeShape)[0];
+
+      return qvs;
     }
 
     getLabel(lang:string): string {
