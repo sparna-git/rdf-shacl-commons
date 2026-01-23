@@ -9,7 +9,9 @@ import { GEOSPARQL } from '../vocabularies/GEOSPARQL';
 import { StatisticsReader } from './StatisticsReader';
 import { SPARNATURAL } from '../vocabularies/SPARNATURAL';
 import { NamedNode } from '@rdfjs/types';
-import { NodeShape } from './NodeShape';
+import { ShapeFactory } from './ShaclFactory';
+
+import type { NodeShape } from './NodeShape';
 
 const factory = new DataFactory();
 
@@ -109,7 +111,7 @@ export class ListWidget extends BaseWidget implements SearchWidgetIfc {
             return 20;
         }
 
-        let nodeShape = new NodeShape(range, store); 
+        let nodeShape = ShapeFactory.buildShape(range, store) as NodeShape;
         if(range && nodeShape.couldBeSkosConcept()){
             return 20;                    
         }

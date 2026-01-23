@@ -14,8 +14,10 @@ import { DASH } from '../vocabularies/DASH';
 import { FOAF } from '../vocabularies/FOAF';
 import { SCHEMA } from '../vocabularies/SCHEMA';
 import { DCT } from '../vocabularies/DCT';
-import { PropertyShape } from './PropertyShape';
 import { ShapeFactory } from './ShaclFactory';
+
+import type { PropertyShape } from './PropertyShape';
+import { PropertyPath } from './PropertyPath';
 
 const factory = new DataFactory();
 
@@ -146,6 +148,21 @@ export class NodeShape extends Shape {
         return dedupShapes;
     }
 
+    hasPropertyShapeForPath(path:Term): boolean {
+        // use the serialized SPARQL alue of the path for comparison
+        let sparqlPath = new PropertyPath(path, this.graph).toSparql();
+
+        let properties:PropertyShape[] = this.getProperties();
+        for(const p of properties) {
+            let pPath = p.getShPath();
+            let pSparqlPath = new PropertyPath(pPath!, this.graph).toSparql();
+            if(pSparqlPath === sparqlPath) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * @returns a property labelled with dash:propertyRole = dash:LabelRole
      */
@@ -205,7 +222,7 @@ export class NodeShape extends Shape {
         
         if(items.length > 0 && items[0]) {
             // return the first one found
-            return new PropertyShape(items[0], this.graph);
+            return ShapeFactory.buildShape(items[0], this.graph) as PropertyShape;
         } else {
             return undefined;
         }
@@ -387,7 +404,7 @@ export class NodeShape extends Shape {
         let propShapes:Term[] = this.graph.readProperty(this.resource, SH.PROPERTY);
 
         let hasPropertyRdfTypeSkosConcept:boolean = propShapes.findIndex(p => {
-            let propertyShape:PropertyShape = new PropertyShape(p as Resource, this.graph);
+            let propertyShape:PropertyShape = ShapeFactory.buildShape(p as Resource, this.graph) as PropertyShape;
             let path = propertyShape.getShPath();
             if(
                 path
@@ -403,7 +420,7 @@ export class NodeShape extends Shape {
         }) > -1;
 
         let hasConstraintOnSkosInScheme = propShapes.findIndex(p => {
-            let propertyShape:PropertyShape = new PropertyShape(p as Resource, this.graph);
+            let propertyShape:PropertyShape = ShapeFactory.buildShape(p as Resource, this.graph) as PropertyShape;
             let path = propertyShape.getShPath();
             if(
                 path

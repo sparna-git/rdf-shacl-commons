@@ -4,6 +4,12 @@ import { SH } from "../vocabularies/SH";
 import { Model } from "../Model";
 import { DataFactory } from "rdf-data-factory";
 import { RDF } from "../vocabularies/RDF";
+import { Resource } from "../Resource";
+import { ShapeFactory } from "./ShaclFactory";
+
+import type { PropertyShape } from "./PropertyShape";
+import type { NodeShape } from "./NodeShape";
+import { PropertyPath } from "./PropertyPath";
 
 const factory = new DataFactory();
 
@@ -165,44 +171,10 @@ export class ShaclModel extends Model {
     }
 
     /**
-     * Renders the provided SHACL property path as a SPARQL property path syntax, using prefixed URIs.
-     * @param path The SHACL property path to render in SPARQL.
-     * @param usePrefixes True to use prefixes, false to use full URIs.
-     * @return The rendered SPARQL property path.
+     * @deprecated use PropertyPath.toSparql() instead
      */
-    pathToSparql(path: Term, usePrefixes: boolean = false): string {
-        if (path.termType === "NamedNode") {
-            if (usePrefixes) {
-                return Model.getLocalName(path.value);
-            } else {
-                return `<${path.value}>`;
-            }
-        } else if (path.termType === "BlankNode") {
-            if (this.store.getQuads(path, RDF.FIRST, null, null).length > 0) {
-                // This is an RDF list, indicating a sequence path
-                const sequence: Term[] = this.readListContent(path);
-                return sequence.map(t => this.pathToSparql(t, usePrefixes)).join("/");
-            } else {
-                if (this.hasProperty(path, SH.ONE_OR_MORE_PATH)) {
-                    return this.pathToSparql(this.readSingleProperty(path, SH.ONE_OR_MORE_PATH)!, usePrefixes) + "+";
-                }
-                if (this.hasProperty(path, SH.INVERSE_PATH)) {
-                    return "^" + this.pathToSparql(this.readSingleProperty(path, SH.INVERSE_PATH)!, usePrefixes);
-                }
-                if (this.hasProperty(path, SH.ALTERNATIVE_PATH)) {
-                    const list = this.readSingleProperty(path, SH.ALTERNATIVE_PATH)!;
-                    const sequence: Term[] = this.readListContent(list);
-                    return `(${sequence.map(t => this.pathToSparql(t, usePrefixes)).join("|")})`;
-                }
-                if (this.hasProperty(path, SH.ZERO_OR_MORE_PATH)) {
-                    return this.pathToSparql(this.readSingleProperty(path, SH.ZERO_OR_MORE_PATH)!, usePrefixes) + "*";
-                }
-                if (this.hasProperty(path, SH.ZERO_OR_ONE_PATH)) {
-                    return this.pathToSparql(this.readSingleProperty(path, SH.ZERO_OR_ONE_PATH)!, usePrefixes) + "?";
-                }
-            }
-        }
-        throw new Error("Unsupported SHACL property path");
+    pathToSparql(path: Term, useLocalName: boolean = false): string {
+        return new PropertyPath(path, this).toSparql(useLocalName);
     }
 
 
@@ -260,6 +232,53 @@ export class ShaclModel extends Model {
             }
             }
             i++;
+        }
+    }
+
+    public static addInversePropertyShapes(n3store: RdfStore) {
+        // any subject of an sh:path...
+        let shaclModel = new ShaclModel(n3store);
+        const objects = shaclModel.findObjectsOfProperty(SH.PROPERTY);
+
+        for (const o of objects) {
+            let pShape = ShapeFactory.buildShape(o, shaclModel) as PropertyShape;
+            let path = pShape.getShPath();
+            
+            if(path && path.termType == "NamedNode") {
+                // if the path is a NamedNode, add a new property shape on the NodeShape
+                // that is referenced here with an sh:node
+                
+                let range:Resource[] = pShape.resolveShNodeOrShClass();
+                // also read ranges from sh:or if any
+                let shOrs = pShape.getShOr();
+                let rangesFromShOr = shOrs.map( orItem => ( ShapeFactory.buildShape(orItem, shaclModel) as NodeShape )).flatMap( ns => ns.resolveShNodeOrShClass() );
+                // merge direct ranges and ranges from sh:or
+                range.push(...rangesFromShOr);
+
+                // for each range...
+                for(const r of range) {                    
+                    // add an inverse property shape for every original node shape that was pointing
+                    // to the original property shape (potentially multiple in rare cases)
+                    let nodeShapes:NodeShape[] = pShape.getInverseShProperty();
+                    for(const ns of nodeShapes) {
+                        // the path will be a blank node   
+                        let inversePath = factory.blankNode();
+                        n3store.addQuad(factory.quad(inversePath, SH.INVERSE_PATH, path));
+
+                        // if this node shape does not already have a property shape for this inverse path
+                        if(( ShapeFactory.buildShape(r, shaclModel) as NodeShape ).hasPropertyShapeForPath(inversePath)) {
+                            continue;
+                        } else {
+                            // add a new property shape with the inverse path
+                            let inversePropertyShape = factory.blankNode();
+
+                            n3store.addQuad(factory.quad(r, SH.PROPERTY, inversePropertyShape));
+                            n3store.addQuad(factory.quad(inversePropertyShape, SH.PATH, inversePath));                            
+                            n3store.addQuad(factory.quad(inversePropertyShape, SH.NODE, ns.resource));
+                        }
+                    }                    
+                }
+            }
         }
     }
 

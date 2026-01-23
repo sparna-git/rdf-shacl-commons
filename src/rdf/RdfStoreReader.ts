@@ -92,17 +92,14 @@ export class RdfStoreReader {
     var quadStream;
     try {
       // attempt to parse based on path
-      console.log("Attempt to parse determining format from path " + filePath+"...");
       quadStream = rdfParser.parse(textStream, { path: filePath });
     } catch (exception) {
       try {
-        console.log("Attempt to parse in Turtle...");
         // attempt to parse in turtle
         quadStream = rdfParser.parse(textStream, {
           contentType: "text/turtle",
         });
       } catch (exception) {
-        console.log("Attempt to parse in RDF/XML...");
         // attempt to parse in RDF/XML
         quadStream = rdfParser.parse(textStream, {
           contentType: "application/rdf+xml",

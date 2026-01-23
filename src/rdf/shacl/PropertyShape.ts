@@ -12,7 +12,10 @@ import { VOLIPI } from '../vocabularies/VOLIPI';
 import { SKOS } from '../vocabularies/SKOS';
 import { SearchWidgetIfc, SearchWidgetRegistry } from './SearchWidgets';
 import { ShapeFactory } from './ShaclFactory';
-import { NodeShape } from './NodeShape';
+
+import type { NodeShape } from './NodeShape';
+import { PropertyPath } from './PropertyPath';
+import { OWL } from '../vocabularies/OWL';
 
 const factory = new DataFactory();
 
@@ -20,6 +23,14 @@ export class PropertyShape extends Shape {
 
     constructor(resource:Resource, graph:ShaclModel) {
         super(resource, graph);
+    }
+
+    getInverseShProperty(): NodeShape[] {
+      let nodeShapes:NodeShape[] = 
+            this.graph.findSubjectsOf(SH.PROPERTY, this.resource)
+            .map(node => ShapeFactory.buildShape(node, this.graph) as NodeShape);
+
+      return nodeShapes;
     }
 
     /**
@@ -31,8 +42,7 @@ export class PropertyShape extends Shape {
           throw new Error("Property shape " + this.resource.value + " has no sh:path");
         } else {
           return path;
-        }
-        
+        }        
     }
 
     /**
@@ -99,18 +109,35 @@ export class PropertyShape extends Shape {
 
       if(!label) {
         if(this.graph.hasTriple(this.resource,SH.PATH, null)) {
-          // try to read the rdfs:label of the property itself
-          // note that we try to read an rdfs:label event in case the path is a blank node, e.g. sequence path
-          label = this.graph.readSinglePropertyInLang(
-            this.getShPath(),
-            RDFS.LABEL, 
-            lang)?.value;
+          let thePath = this.getShPath();
+          if(thePath.termType === "NamedNode") {
+            // try to read the rdfs:label of the property itself
+            // note that we try to read an rdfs:label event in case the path is a blank node, e.g. sequence path
+            label = this.graph.readSinglePropertyInLang(
+              thePath,
+              RDFS.LABEL, 
+              lang)?.value;
+          } else if(new PropertyPath(thePath, this.graph).isInversePath()) {
+            let inversePath = new PropertyPath(thePath, this.graph).getInversePath();
+            if(inversePath && inversePath.termType === "NamedNode") {
+              // try to read the rdfs:label of the OWL property
+              // that references this one with owl:inverseOf
+              // be careful as owl:inverseOf may be expressed in either direction
+              let inverseProperty = this.#getInverseOf(inversePath);
+              if(inverseProperty) {
+                label = this.graph.readSinglePropertyInLang(
+                  inverseProperty,
+                  RDFS.LABEL, 
+                  lang)?.value;
+              }
+            }
+          }
         }
       }
 
       // no sh:name present, no property label, display the sh:path without prefixes
       if(!label) {
-        label = this.graph.pathToSparql(this.getShPath(), true);
+        label = new PropertyPath(this.getShPath(), this.graph).toSparql( true);
       }      
       // or try to read the local part of the URI, but should not happen
       if(!label) {
@@ -118,6 +145,21 @@ export class PropertyShape extends Shape {
       }
 
       return label;
+    }
+
+    #getInverseOf(property:Term):Term|undefined {
+      let inverses:Term[] = this.graph.readProperty(property, OWL.INVERSE_OF);
+      if(inverses.length > 0) {
+        return inverses[0];
+      }
+
+      // try the other direction
+      inverses = this.graph.findSubjectsOf(OWL.INVERSE_OF, property);
+      if(inverses.length > 0) {
+        return inverses[0];
+      }
+
+      return undefined;
     }
 
     getTooltip(lang:string): string | undefined {

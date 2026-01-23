@@ -111,8 +111,12 @@ export class Shape {
         return this.graph.readProperty(this.resource, DASH.SEARCH_WIDGET).map(r => ResourceFactory.fromTerm(r)) as Resource[];
     }
 
+    /**
+     * @param lang the language for which to read a display label
+     * @returns a display name for this shape in the specified language (subclasses can override to read e.g. sh:name on property)
+     */
     getLabel(lang:string): string | undefined {
-      // first try to read an sh:name
+      // read an rdfs:label in the requested language
       let label = this.graph.readSinglePropertyInLang(this.resource, RDFS.LABEL, lang)?.value;
 
       // or try to read the local part of the URI, but should not happen

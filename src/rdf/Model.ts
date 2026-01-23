@@ -3,6 +3,10 @@ import { RdfStore } from "rdf-stores";
 import { DataFactory } from "rdf-data-factory";
 import { XSD } from "./vocabularies/XSD";
 import { RDF } from "./vocabularies/RDF";
+import { HashMapDataset, PipelineStage, PlanBuilder } from "sparql-engine";
+import { RdfStoreGraph } from "./SparqlEngine";
+import { Consumable } from "sparql-engine/dist/operators/update/consumer";
+import { QueryOutput } from "sparql-engine/dist/engine/plan-builder";
 
 /**
  * A simple RDF model, wrapping an RDFJS store, with utility methods to read properties and lists.
@@ -70,6 +74,24 @@ export class Model {
         return this.store
             .getQuads(null, property, object, null)
             .map(quad => quad.subject);
+    }
+
+    /**
+     * Finds all subjects of the given property, or undefined if not found
+     **/
+    findSubjectsOfProperty(property: Term): Quad_Subject[] {
+        return this.store
+            .getQuads(null, property, null, null)
+            .map(quad => quad.subject);
+    }
+
+    /**
+     * Finds all objects of the given property, or undefined if not found
+     **/
+    findObjectsOfProperty(property: Term): Quad_Object[] {
+        return this.store
+            .getQuads(null, property, null, null)
+            .map(quad => quad.object);
     }
 
     /**
@@ -338,6 +360,66 @@ export class Model {
         } else {
             return node.value;
         }
+    }
+
+    /******* SPARQL QUERY EXECUTION - untested *********/
+
+    /**
+     * Execute a SPARQL query over the store using sparql-engine
+     * @param sparqlQuery The SPARQL query string to execute
+     * @returns A promise that resolves to the query results
+     */
+    async querySparql(sparqlQuery: string): Promise<any> {
+        try {
+            const graph = new RdfStoreGraph(this.store);
+            const dataset = new HashMapDataset('http://default/', graph);
+            const builder = new PlanBuilder(dataset);
+            const plan = builder.build(sparqlQuery);
+
+            const results = await (plan as Consumable).execute();
+            return results;
+        } catch (error) {
+            throw new Error(`SPARQL query execution failed: ${error instanceof Error ? error.message : String(error)}`);
+        }
+    }
+
+    /**
+     * Execute a SPARQL SELECT query and return bindings as an array of objects
+     * @param sparqlQuery The SPARQL SELECT query string
+     * @returns A promise that resolves to an array of result bindings
+     */
+    async querySparqlSelect(sparqlQuery: string): Promise<Array<{ [key: string]: Term }>> {
+        return new Promise((resolve, reject) => {
+            try {
+                const graph = new RdfStoreGraph(this.store);
+                const dataset = new HashMapDataset('http://default/', graph);
+                const builder = new PlanBuilder(dataset);
+                const iterator = builder.build(sparqlQuery) as PipelineStage<QueryOutput>;
+                
+                const bindings: Array<{ [key: string]: Term }> = [];
+                
+                // Subscribe to query results
+                iterator.subscribe(
+                    (binding: any) => {
+                        // Convert binding to object and store results
+                        if (binding.toObject) {
+                            bindings.push(binding.toObject());
+                        } else {
+                            bindings.push(binding);
+                        }
+                    },
+                    (error: Error) => {
+                        reject(new Error(`SPARQL SELECT query execution failed: ${error.message}`));
+                    },
+                    () => {
+                        // Query evaluation complete
+                        resolve(bindings);
+                    }
+                );
+            } catch (error) {
+                reject(new Error(`SPARQL SELECT query execution failed: ${error instanceof Error ? error.message : String(error)}`));
+            }
+        });
     }
 
 }

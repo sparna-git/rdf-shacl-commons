@@ -7,5 +7,6 @@ export const OWL = {
   THING: factory.namedNode(OWL_NAMESPACE + "Thing") as NamedNode,
   EQUIVALENT_PROPERTY: factory.namedNode(OWL_NAMESPACE + "equivalentProperty") as NamedNode,
   EQUIVALENT_CLASS: factory.namedNode(OWL_NAMESPACE + "equivalentClass") as NamedNode,
+  INVERSE_OF: factory.namedNode(OWL_NAMESPACE + "inverseOf") as NamedNode,
   UNION_OF: factory.namedNode(OWL_NAMESPACE + "unionOf") as NamedNode,
 };
