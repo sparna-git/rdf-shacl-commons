@@ -38,9 +38,9 @@ export class RdfStoreGraph extends Graph {
         
         // Convert Quads to sparql-engine's TripleObject format (strings)
         const triples = results.map(quad => ({
-            subject: quad.subject.id || quad.subject.value,
-            predicate: quad.predicate.id || quad.predicate.value,
-            object: quad.object.id || quad.object.value
+            subject: quad.subject.value,
+            predicate: quad.predicate.value,
+            object: quad.object.value
         }));
         
         return triples;
