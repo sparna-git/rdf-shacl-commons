@@ -147,6 +147,22 @@ export class PropertyShape extends Shape {
       return label;
     }
 
+    hasInverseOfPredicate(): boolean {
+      if(
+        this.getShPath().termType === "NamedNode"
+        &&
+        this.#getInverseOf(this.getShPath()!)
+      ) {
+        return true;
+      }
+      return false;
+    } 
+
+    /**
+     * 
+     * @param property the *OWL property* to return the inverse of (not a property shape !)
+     * @returns 
+     */
     #getInverseOf(property:Term):Term|undefined {
       let inverses:Term[] = this.graph.readProperty(property, OWL.INVERSE_OF);
       if(inverses.length > 0) {

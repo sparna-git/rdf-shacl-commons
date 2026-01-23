@@ -244,7 +244,8 @@ export class ShaclModel extends Model {
             let pShape = ShapeFactory.buildShape(o, shaclModel) as PropertyShape;
             let path = pShape.getShPath();
             
-            if(path && path.termType == "NamedNode") {
+            // right now, trigger only if the inverseOf of the path is found
+            if(pShape.hasInverseOfPredicate()) {
                 // if the path is a NamedNode, add a new property shape on the NodeShape
                 // that is referenced here with an sh:node
                 

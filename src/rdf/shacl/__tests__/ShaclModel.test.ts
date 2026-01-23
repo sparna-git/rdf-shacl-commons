@@ -39,6 +39,7 @@ describe('ShaclModel', () => {
                 @prefix ex: <http://example.org/> .
                 @prefix sh: <http://www.w3.org/ns/shacl#> .
                 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+                @prefix owl: <http://www.w3.org/2002/07/owl#>.
 
                 ex:FooShape
                     a sh:NodeShape ;
@@ -49,6 +50,8 @@ describe('ShaclModel', () => {
                 
                 ex:RangeShape
                     a sh:NodeShape .
+
+                ex:inverseOfTest1 owl:inverseOf ex:test1 .
             `;
 
             await loadTurtle(turtleData);
@@ -86,6 +89,7 @@ describe('ShaclModel', () => {
                 @prefix ex: <http://example.org/> .
                 @prefix sh: <http://www.w3.org/ns/shacl#> .
                 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+                @prefix owl: <http://www.w3.org/2002/07/owl#>.
 
                 ex:PersonShape
                     a sh:NodeShape ;
@@ -99,6 +103,8 @@ describe('ShaclModel', () => {
                         sh:path [ sh:inversePath ex:test2 ] ;
                     ] ;
                 .
+
+                ex:inverseOfTest2 owl:inverseOf ex:test2 .
             `;
 
             await loadTurtle(turtleData);
@@ -121,6 +127,7 @@ describe('ShaclModel', () => {
                 @prefix ex: <http://example.org/> .
                 @prefix sh: <http://www.w3.org/ns/shacl#> .
                 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+                @prefix owl: <http://www.w3.org/2002/07/owl#>.
 
                 ex:PersonShape
                     a sh:NodeShape ;
@@ -139,6 +146,8 @@ describe('ShaclModel', () => {
                 ex:BarShape
                     a sh:NodeShape ;
                     sh:targetClass ex:Bar .
+
+                ex:inverseOfKnows owl:inverseOf ex:knows .
             `;
 
             await loadTurtle(turtleData);
