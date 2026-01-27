@@ -87,12 +87,13 @@ export class ShaclSparqlPostProcessor {
             fullString:string) {
             // first substitutes any other variable name with a prefix
             // so that we garantee unicity across the complete query
-            var reVariables = new RegExp("\\?(\\S*)", "g");
+            // here we match any variable that is not "?this"
+            var reVariables = new RegExp("\\?(?!this\\b)(\\S*)", "g");
             let whereClauseReplacedVariables = whereClause.replace(reVariables, "?$1_"+p1.substring(1));
             
             // then, replace the match on the original URI with the whereClause of the target
-            // replacing "$this" with the original variable name
-            var reThis = new RegExp("\\$this", "g");
+            // replacing "$this" or "?thiswith the original variable name
+            var reThis = new RegExp("[\\$\\?]this", "g");
             let whereClauseReplacedThis = whereClauseReplacedVariables.replace(reThis, p1);
 
             // then we make sure the where clause properly ends with a dot
