@@ -11,6 +11,13 @@ export * from "./rdf/shacl/ShaclSparqlPostProcessor";
 export * from "./rdf/shacl/Shape";
 export * from "./rdf/shacl/StatisticsReader";
 
+export * from "./io/LocalCacheData";
+export * from "./io/LocalDataStorage";
+export * from "./io/UrlFetcher";
+export * from "./io/sparql/Catalog";
+export * from "./io/sparql/DataService";
+export * from "./io/sparql/SparqlHandler";
+
 export * from "./rdf/vocabularies/DASH";
 export * from "./rdf/vocabularies/DCT";
 export * from "./rdf/vocabularies/FOAF";
