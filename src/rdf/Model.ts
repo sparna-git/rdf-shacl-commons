@@ -284,10 +284,23 @@ export class Model {
         return bestLiteral;
     }
 
+    /**
+     * @param uri a full URI string
+     * @returns Everything after the last '#' or '/' character in the URI
+     */
     public static getLocalName(uri:string):string{
         if(uri.includes('#')) return uri.split('#').pop() as string
         if(uri.includes('/')) return uri.split('/').pop() as string
         return uri;
+    }
+
+    /**
+     * @param uri a full URI string
+     * @returns Everything after the last '#' or '/' character in the URI, with all non-ASCII characters replaced with an underscore, and all dashes replaced with underscores (to be used as variable names)
+     */
+    public static getSparqlVariableNameFromUri(uri:string){
+        // replaces all non-ASCII characters with an underscore in variable names
+        return Model.getLocalName(uri).replace(/[^\x00-\x7F]/g, "_").replace(/-/g, "_");
     }
 
     /******* RENDERING UTILITIES *********/
