@@ -38,21 +38,21 @@ export class Shape {
      * @returns The color defined with volipi:color, if any
      */
     getVolipiColor(): string | undefined {
-      return this.graph.readSingleProperty(this.resource, VOLIPI.COLOR)?.value;
+      return this.graph.readSinglePropertyAsString(this.resource, VOLIPI.COLOR);
     }
 
     /**
      * @returns the icon name defined with volipi:iconName, if any (for FontAwesome icons, e.g. "fa-user" or "fas fa-user")
      */
     getVolipiIconName(): string | undefined {
-      return this.graph.readSingleProperty(this.resource,VOLIPI.ICON_NAME)?.value;
+      return this.graph.readSinglePropertyAsString(this.resource,VOLIPI.ICON_NAME);
     }
 
     /**
      * @returns the icon defined with volipi:icon, if any (for URL to an image)
      */
     getVolipiIcon(): string | undefined {
-      return this.graph.readSingleProperty(this.resource,VOLIPI.ICON)?.value;
+      return this.graph.readSinglePropertyAsString(this.resource,VOLIPI.ICON);
     }
 
     /**
@@ -74,6 +74,27 @@ export class Shape {
      */
     getShClass(): Resource[] {
         return this.graph.readProperty(this.resource, SH.CLASS) as Resource[];
+    }
+
+    /**
+     * @returns the value of sh:codeIdentifier, if any
+     */
+    getShCodeIdentifier(): string | undefined {
+        return this.graph.readSinglePropertyAsString(this.resource, SH.CODE_IDENTIFIER);
+    }
+
+    /**
+     * @returns the values of sh:intent, if any
+     */
+    getShIntent(lang:string): string[] | undefined {
+        return this.graph.readPropertyInLangAsString(this.resource, SH.INTENT, lang);
+    }
+
+    /**
+     * @returns the values of sh:agentInstruction, if any
+     */
+    getShAgentInstruction(lang:string): string[] | undefined {
+        return this.graph.readPropertyInLangAsString(this.resource, SH.AGENT_INSTRUCTION, lang);
     }
 
     /**

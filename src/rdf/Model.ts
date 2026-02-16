@@ -58,6 +58,16 @@ export class Model {
     }
 
     /**
+     * Reads the given property on an entity, and returns the first value found as a string
+     **/
+    readSinglePropertyAsString(subject: Term, property: Term): string | undefined {
+        var values = this.readProperty(subject, property);
+        if (values.length > 0) {
+            return values[0]?.value;
+        }
+    }
+
+    /**
      * Reads the given property on an entity, and returns the first value found cast to Number
      **/
     readSinglePropertyAsNumber(subject: Term, property: Term): number | undefined {
@@ -105,6 +115,9 @@ export class Model {
         }
     }
 
+    /**
+     * @returns All the values of the given property on an entity that have the given language, or if no value is found with this language, returns the values without language tag (if defaultToNoLang is true)
+     */
     readPropertyInLang(
         subject: Term,
         property: Term,
@@ -124,6 +137,22 @@ export class Model {
         }
 
         return values;
+    }
+
+    /**
+     * @returns same as readPropertyInLang, but returns the string value of the RDF Literals, instead of the RDF Terms
+     */
+    readPropertyInLangAsString(
+        subject: Term,
+        property: Term,
+        lang: string,
+        defaultToNoLang = true
+    ): string[] | undefined {
+        var values = this.readPropertyInLang(subject, property, lang, defaultToNoLang);
+
+        if (values.length > 0) {
+            return values.map(v => v?.value);
+        }
     }
 
     /**

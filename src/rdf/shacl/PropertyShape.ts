@@ -16,6 +16,7 @@ import { ShapeFactory } from './ShaclFactory';
 import type { NodeShape } from './NodeShape';
 import { PropertyPath } from './PropertyPath';
 import { OWL } from '../vocabularies/OWL';
+import { XSD } from '../..';
 
 const factory = new DataFactory();
 
@@ -101,6 +102,13 @@ export class PropertyShape extends Shape {
             .map(node => ShapeFactory.buildShape(node, this.graph) as NodeShape)[0];
 
       return qvs;
+    }
+
+    /**
+     * @returns true if the shape is single line (sh:singleLine true^^xsd:boolean)
+     */
+    isSingleLine(): boolean {
+      return this.graph.hasTriple(this.resource, SH.SINGLE_LINE, factory.literal("true", XSD.BOOLEAN));
     }
 
     getLabel(lang:string): string {
