@@ -18,12 +18,7 @@ describe('Model', () => {
      */
     function loadTurtle(turtleData: string): Promise<void> {
         return new Promise((resolve, reject) => {
-            RdfStoreReader.buildStoreFromString(turtleData, 'test.ttl', (loadedStore: RdfStore) => {
-                // Copy all quads from loaded store to test store
-                const allQuads = loadedStore.getQuads(null, null, null, null);
-                allQuads.forEach(quad => {
-                    store.addQuad(quad);
-                });
+            RdfStoreReader.populateStore(store, turtleData, 'test.ttl', (loadedStore: RdfStore) => {
                 resolve();
             });
         });

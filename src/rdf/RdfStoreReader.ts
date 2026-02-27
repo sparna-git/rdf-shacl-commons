@@ -18,9 +18,14 @@ export class RdfStoreReader {
    * @param callback 
    * @returns a store built from the string
    */
-  static buildStoreFromString(configData:string, filePath:string, callback: (store:RdfStore) => void) {
+  static buildStoreFromString(inlineRdf:string, filePath:string, callback: (store:RdfStore) => void) {
     const store:RdfStore = RdfStore.createDefault();
-    let quadStream: Stream<Quad> = RdfStoreReader.#toQuadStream(configData,filePath);
+    this.populateStore(store, inlineRdf, filePath, callback);
+  }
+
+
+  static populateStore(store:RdfStore, inlineRdf:string, filePath:string, callback: (store:RdfStore) => void) {
+    let quadStream: Stream<Quad> = RdfStoreReader.#toQuadStream(inlineRdf,filePath);
 
     store.import(quadStream)
       .on('error', () => console.error("Problem parsing inline config"))
@@ -83,6 +88,8 @@ export class RdfStoreReader {
     })
   }
 
+
+  
   static #toQuadStream(string:any, filePath:any) {
     // turn input string into a stream
     var textStream = new Readable();

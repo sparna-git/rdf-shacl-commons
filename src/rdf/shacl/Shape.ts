@@ -77,6 +77,13 @@ export class Shape {
     }
 
     /**
+     * @returns the IRI that are referenced from this shape with sh:nodeKind
+     */
+    getShNodeKind(): Resource {
+        return this.graph.readSingleProperty(this.resource, SH.NODE_KIND) as Resource;
+    }
+
+    /**
      * @returns the value of sh:codeIdentifier, if any
      */
     getShCodeIdentifier(): string | undefined {

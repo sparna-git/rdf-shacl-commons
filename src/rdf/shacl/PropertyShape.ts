@@ -312,7 +312,55 @@ export class PropertyShape extends Shape {
       }
     }
 
+    getRangeShapes(): NodeShape[] {
+      let rangeShapes: Resource[] = [];
 
+      // first read on property shape itself
+      rangeShapes = this.resolveShNodeOrShClass() ;
+
+      // still nothing, look on the sh:or members
+      if(rangeShapes.length == 0) { 
+        var rangesFromOrMembersLevel1: Resource[] = [];
+
+        var orMembersLevel1:NodeShape[] = this.getShOr().map(m => ShapeFactory.buildShape(m, this.graph) as NodeShape);  
+        orMembersLevel1?.forEach(orMemberLevel1 => {
+          // read sh:class / sh:node
+          var orMemberLevel1Range: Resource[] = orMemberLevel1.resolveShNodeOrShClass() ;
+
+          // if still nothing, recurse one level more
+          if(orMemberLevel1Range.length == 0) {
+            var rangesFromOrMembersLevel2:Resource[] = [];
+
+            var orMembersLevel2:NodeShape[] = orMemberLevel1.getShOr().map(m => ShapeFactory.buildShape(m, this.graph) as NodeShape);  
+            orMembersLevel2?.forEach(orMemberLevel2 => {
+              // read sh:class / sh:node
+              var orMemberLevel2ShapeRanges: Resource[] = orMemberLevel2.resolveShNodeOrShClass();
+              
+              if(orMemberLevel2ShapeRanges.length == 0) {
+                // if no range shape found for this or-member, we consider that the range shape is the or-member itself
+                rangesFromOrMembersLevel2.push(orMemberLevel2.resource);
+              } else {
+                rangesFromOrMembersLevel2.push(...orMemberLevel2ShapeRanges);
+              }
+            });
+
+            if(rangesFromOrMembersLevel2.length == 0) {
+              // if no range shape found for this or-member, we consider that the range shape is the or-member itself
+              orMemberLevel1Range.push(orMemberLevel1.resource);
+            } else {
+              orMemberLevel1Range.push(...rangesFromOrMembersLevel2);
+            }
+            
+          }
+
+          rangesFromOrMembersLevel1.push(...orMemberLevel1Range);       
+        });
+
+        rangeShapes.push(...rangesFromOrMembersLevel1);
+      }
+
+      return rangeShapes.map(r => ShapeFactory.buildShape(r, this.graph) as NodeShape);
+    }
 
 }
 
