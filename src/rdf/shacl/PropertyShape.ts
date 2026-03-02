@@ -47,21 +47,6 @@ export class PropertyShape extends Shape {
     }
 
     /**
-     * @returns this list of values defined in sh:in, if any, otherwise undefined
-     */
-    getShIn():Term[] | undefined {
-      let values:Term[] = this.graph.readAsList(this.resource, SH.IN);
-      return (values.length > 0) ? values : undefined;
-    }
-
-    /**
-     * @returns The single value defined with sh:hasValue, if any
-     */
-    getShHasValue():Term | undefined {
-      return this.graph.readSingleProperty(this.resource, SH.HAS_VALUE);
-    }
-
-    /**
      * @returns the sh:minCount number if defined, otherwise undefined
      */
     getShMinCount(): number | undefined {

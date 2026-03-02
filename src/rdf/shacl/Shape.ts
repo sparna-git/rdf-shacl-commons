@@ -11,6 +11,7 @@ import { DASH } from "../vocabularies/DASH";
 import { ListWidget, SearchWidgetIfc, SearchWidgetRegistry } from "./SearchWidgets";
 import { XSD } from "../vocabularies/XSD";
 import { DataFactory, Literal } from "rdf-data-factory";
+import { ShapeFactory } from "./ShaclFactory";
 // Note : pour éviter les dépendances cycliques, il ne faut pas importer NodeShape ici
 
 const factory = new DataFactory();
@@ -162,7 +163,20 @@ export class Shape {
       return this.graph.hasTriple(this.resource, SH.DEACTIVATED, factory.literal("true", XSD.BOOLEAN));
     }
 
+    /**
+     * @returns this list of values defined in sh:in, if any, otherwise undefined
+     */
+    getShIn():Term[] | undefined {
+      let values:Term[] = this.graph.readAsList(this.resource, SH.IN);
+      return (values.length > 0) ? values : undefined;
+    }
 
+    /**
+     * @returns The single value defined with sh:hasValue, if any
+     */
+    getShHasValue():Term | undefined {
+      return this.graph.readSingleProperty(this.resource, SH.HAS_VALUE);
+    }
 
 
 

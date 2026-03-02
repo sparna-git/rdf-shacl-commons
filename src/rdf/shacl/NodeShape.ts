@@ -125,7 +125,7 @@ export class NodeShape extends Shape {
     }
     
     /**
-     * @returns all (non-decativated) properties available on this node shape, including inherited properties from superclasses
+     * @returns all properties available on this node shape, including inherited properties from superclasses
      */
     getProperties(): PropertyShape[] {
 

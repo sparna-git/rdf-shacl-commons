@@ -235,6 +235,9 @@ export class ShaclModel extends Model {
         }
     }
 
+    /**
+     * @deprecated don't use
+     */
     public static addInversePropertyShapes(n3store: RdfStore) {
         // any subject of an sh:path...
         let shaclModel = new ShaclModel(n3store);
