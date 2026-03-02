@@ -1,6 +1,6 @@
 
-import { NodeShape } from './NodeShape';
-import { PropertyShape } from './PropertyShape';
+import { NodeShape } from '../NodeShape';
+import { PropertyShape } from '../PropertyShape';
 import { SparnaturalShapeFactory } from './SparnaturalShapeFactory';
 
 

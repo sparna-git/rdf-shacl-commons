@@ -1,9 +1,9 @@
 
-import { Resource } from '../Resource';
-import { ShapeFactory } from './ShaclFactory';
+import { Resource } from '../../Resource';
+import { ShapeFactory } from '../ShaclFactory';
 
-import type { NodeShape } from './NodeShape';
-import { PropertyShape, StatisticsReader, XSD } from '../..';
+import type { NodeShape } from '../NodeShape';
+import { PropertyShape, StatisticsReader, XSD } from '../../..';
 
 
 export class SparnaturalPropertyShape {
