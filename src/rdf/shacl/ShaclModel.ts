@@ -15,15 +15,15 @@ const factory = new DataFactory();
 
 export class ShaclModel extends Model {
 
-    constructor(n3store: RdfStore) {
-        super(n3store);
+    constructor(graph: RdfStore) {
+        super(graph);
     }
 
     /**
      * 
      * @returns All the subjects of type sh:NodeShape
      */
-    readAllNodeShapes(): string[] {
+    readAllNodeShapes(): NodeShape[] {
         const quadsArray = this.store.getQuads(
             null,
             RDF.TYPE,
@@ -31,13 +31,12 @@ export class ShaclModel extends Model {
             null
         );
 
-        const itemsSet = new Set<string>();
+        const itemsSet = new Set<Term>();
         for (const quad of quadsArray) {
-            var nodeShapeId = quad.subject.value;
-            itemsSet.add(nodeShapeId);
+            itemsSet.add(quad.subject);
         }
 
-        return Array.from(itemsSet);
+        return Array.from(itemsSet).map(ns => ShapeFactory.buildShape(ns, this) as NodeShape);
     }
 
     /**

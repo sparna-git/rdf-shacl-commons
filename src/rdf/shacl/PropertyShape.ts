@@ -204,26 +204,28 @@ export class PropertyShape extends Shape {
       return tooltip;
     }
 
-    getSearchWidgetForRange(range:Resource): SearchWidgetIfc {
+    getSearchWidgetForRange(range:Resource|undefined): SearchWidgetIfc {
       // select the shape on which this is applied
       // either the property shape, or one of the shape in an inner sh:or
 
       // find the shapes in the sh:or that has the provided range as sh:class or sh:node
       var theShape:Shape|null = null;
 
-      var orMembers:Shape[] = this.getShOr().map(m => ShapeFactory.buildShape(m, this.graph));
-      orMembers.forEach(m => {
-        if(m.resolveShNodeOrShClass().map(r => r.value).indexOf(range.value) > -1) {
-          theShape = m;
-        }
-        // recurse one level more
-        var orOrMembers:Shape[] = m.getShOr().map(m => ShapeFactory.buildShape(m, this.graph));
-        orOrMembers.forEach(orOrMember => {
-          if(orOrMember.resolveShNodeOrShClass().map(r => r.value).indexOf(range.value) > -1) {
-            theShape = orOrMember;
+      if(range) {
+        var orMembers:Shape[] = this.getShOr().map(m => ShapeFactory.buildShape(m, this.graph));
+        orMembers.forEach(m => {
+          if(m.resolveShNodeOrShClass().map(r => r.value).indexOf(range.value) > -1) {
+            theShape = m;
           }
+          // recurse one level more
+          var orOrMembers:Shape[] = m.getShOr().map(m => ShapeFactory.buildShape(m, this.graph));
+          orOrMembers.forEach(orOrMember => {
+            if(orOrMember.resolveShNodeOrShClass().map(r => r.value).indexOf(range.value) > -1) {
+              theShape = orOrMember;
+            }
+          });
         });
-      });
+      }
 
       // defaults to this property shape
       if(!theShape) {
