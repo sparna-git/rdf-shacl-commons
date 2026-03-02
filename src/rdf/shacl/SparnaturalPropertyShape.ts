@@ -1,21 +1,10 @@
 
-import { DataFactory } from 'rdf-data-factory';
 import { Resource } from '../Resource';
-import { ShaclModel } from './ShaclModel';
 import { ShapeFactory } from './ShaclFactory';
 
 import type { NodeShape } from './NodeShape';
 import { PropertyShape, StatisticsReader, XSD } from '../..';
 
-const factory = new DataFactory();
-
-export class SparnaturalPropertyShapeFactory {
-  static buildSparnaturalPropertyShape(resource:Resource,shaclModel:ShaclModel) {
-    return new SparnaturalPropertyShape(
-      ShapeFactory.buildShape(resource, shaclModel) as PropertyShape
-    );
-  }
-}
 
 export class SparnaturalPropertyShape {
 

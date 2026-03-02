@@ -1,14 +1,9 @@
 
-import { DataFactory } from 'rdf-data-factory';
-import { Resource } from '../Resource';
-import { ShaclModel } from './ShaclModel';
-
 import { NodeShape } from './NodeShape';
 import { PropertyShape } from './PropertyShape';
-import { SparnaturalPropertyShape, SparnaturalPropertyShapeFactory } from './SparnaturalPropertyShape';
-import { Shape } from './Shape';
+import { SparnaturalShapeFactory } from './SparnaturalShapeFactory';
 
-const factory = new DataFactory();
+
 
 export class SparnaturalNodeShape {
 
@@ -22,7 +17,8 @@ export class SparnaturalNodeShape {
      * @returns all valid sparnatural properties available on this node shape, including inherited properties from superclasses
      */
     getValidProperties(): PropertyShape[] {
-        let validProperties = this.nodeShape.getProperties().filter(p => SparnaturalPropertyShapeFactory.buildSparnaturalPropertyShape(p.resource, this.nodeShape.graph).isValidSparnaturalSHACLSpecificationProperty() );
+        let validProperties = this.nodeShape.getProperties().filter(p => 
+            SparnaturalShapeFactory.buildSparnaturalPropertyShape(p.resource, this.nodeShape.graph).isValidSparnaturalSHACLSpecificationProperty() );
 
         // dedup, although probably dedup is not necessary here
         return [...new Set(validProperties)];
