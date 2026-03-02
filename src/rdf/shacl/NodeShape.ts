@@ -63,6 +63,14 @@ export class NodeShape extends Shape {
         return this.graph.readProperty(this.resource, SH.TARGET) as Resource[];
     }
 
+    /**
+     * @returns all values of sh:property on this entity
+     */
+    getShProperty():PropertyShape[] {
+        return  this.graph.readProperty(this.resource, SH.PROPERTY)
+                .map(node => ShapeFactory.buildShape(node, this.graph) as PropertyShape);
+    }
+
     getLabel(lang:string): string | undefined {
         // first try to read an rdfs:label
         let label = this.graph.readSinglePropertyInLang(this.resource, RDFS.LABEL, lang)?.value;
@@ -130,9 +138,7 @@ export class NodeShape extends Shape {
     getProperties(): PropertyShape[] {
 
         // read all sh:property
-        let propShapes:PropertyShape[] = 
-            this.graph.readProperty(this.resource, SH.PROPERTY)
-            .map(node => ShapeFactory.buildShape(node, this.graph) as PropertyShape);
+        let propShapes:PropertyShape[] = this.getShProperty();
                 
         // add all properties from parents (either through sh:node or sh:targetClass/rdfs:subClassOf/^sh:targetClass)
         let parents:Term[] = this.getParents();
