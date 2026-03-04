@@ -2,13 +2,17 @@ import { ShaclModel } from "./ShaclModel";
 import { Resource, ResourceFactory } from "../Resource";
 import { RDFS } from "../vocabularies/RDFS";
 import { Model } from "../Model";
-import { VOLIPI } from '../vocabularies/VOLIPI';
-import { SH } from '../vocabularies/SH';
-import { NamedNode, Quad_Object, Quad_Subject, Term } from '@rdfjs/types';
+import { VOLIPI } from "../vocabularies/VOLIPI";
+import { SH } from "../vocabularies/SH";
+import { NamedNode, Quad_Object, Quad_Subject, Term } from "@rdfjs/types";
 import { RDF } from "../vocabularies/RDF";
 import { DatatypeIfc, DatatypeRegistry } from "../Datatypes";
 import { DASH } from "../vocabularies/DASH";
-import { ListWidget, SearchWidgetIfc, SearchWidgetRegistry } from "./SearchWidgets";
+import {
+  ListWidget,
+  SearchWidgetIfc,
+  SearchWidgetRegistry,
+} from "./SearchWidgets";
 import { XSD } from "../vocabularies/XSD";
 import { DataFactory, Literal } from "rdf-data-factory";
 import { ShapeFactory } from "./ShaclFactory";
@@ -20,285 +24,335 @@ const factory = new DataFactory();
  * A SHACL shape, either a NodeShape or a PropertyShape
  */
 export class Shape {
-    resource: Resource;
-    graph:ShaclModel;
+  resource: Resource;
+  graph: ShaclModel;
 
-    constructor(resource:Resource, graph:ShaclModel) {
-      this.resource = resource;
-      this.graph = graph;
-    }
+  constructor(resource: Resource, graph: ShaclModel) {
+    this.resource = resource;
+    this.graph = graph;
+  }
 
-    /**
-     * @returns the underlying resource of this shape (the NodeShape or PropertyShape IRI or BlankNode)
-     */
-    getResource(): Resource {
-        return this.resource;
-    }
+  /**
+   * @returns the underlying resource of this shape (the NodeShape or PropertyShape IRI or BlankNode)
+   */
+  getResource(): Resource {
+    return this.resource;
+  }
 
-    /**
-     * @returns The color defined with volipi:color, if any
-     */
-    getVolipiColor(): string | undefined {
-      return this.graph.readSinglePropertyAsString(this.resource, VOLIPI.COLOR);
-    }
+  /**
+   * @returns The color defined with volipi:color, if any
+   */
+  getVolipiColor(): string | undefined {
+    return this.graph.readSinglePropertyAsString(this.resource, VOLIPI.COLOR);
+  }
 
-    /**
-     * @returns the icon name defined with volipi:iconName, if any (for FontAwesome icons, e.g. "fa-user" or "fas fa-user")
-     */
-    getVolipiIconName(): string | undefined {
-      return this.graph.readSinglePropertyAsString(this.resource,VOLIPI.ICON_NAME);
-    }
+  /**
+   * @returns the icon name defined with volipi:iconName, if any (for FontAwesome icons, e.g. "fa-user" or "fas fa-user")
+   */
+  getVolipiIconName(): string | undefined {
+    return this.graph.readSinglePropertyAsString(
+      this.resource,
+      VOLIPI.ICON_NAME,
+    );
+  }
 
-    /**
-     * @returns the icon defined with volipi:icon, if any (for URL to an image)
-     */
-    getVolipiIcon(): string | undefined {
-      return this.graph.readSinglePropertyAsString(this.resource,VOLIPI.ICON);
-    }
+  /**
+   * @returns the icon defined with volipi:icon, if any (for URL to an image)
+   */
+  getVolipiIcon(): string | undefined {
+    return this.graph.readSinglePropertyAsString(this.resource, VOLIPI.ICON);
+  }
 
-    /**
-     * @returns the order defined with sh:order, if any
-     */
-    getShOrder(): Term | undefined {
-        return this.graph.readSingleProperty(this.resource, SH.ORDER);
-    }
+  /**
+   * @returns the order defined with sh:order, if any
+   */
+  getShOrder(): Term | undefined {
+    return this.graph.readSingleProperty(this.resource, SH.ORDER);
+  }
 
-    /**
-     * @returns the NodeShape IRI that are referenced from this shape with sh:node
-     */
-    getShNode(): Resource[] {
-        return this.graph.readProperty(this.resource, SH.NODE) as Resource[];
-    }
+  /**
+   * @returns the NodeShape IRI that are referenced from this shape with sh:node
+   */
+  getShNode(): Resource[] {
+    return this.graph.readProperty(this.resource, SH.NODE) as Resource[];
+  }
 
-    /**
-     * @returns the IRI that are referenced from this shape with sh:class
-     */
-    getShClass(): Resource[] {
-        return this.graph.readProperty(this.resource, SH.CLASS) as Resource[];
-    }
+  /**
+   * @returns the IRI that are referenced from this shape with sh:class
+   */
+  getShClass(): Resource[] {
+    return this.graph.readProperty(this.resource, SH.CLASS) as Resource[];
+  }
 
-    /**
-     * @returns the IRI that are referenced from this shape with sh:nodeKind
-     */
-    getShNodeKind(): Resource {
-        return this.graph.readSingleProperty(this.resource, SH.NODE_KIND) as Resource;
-    }
+  /**
+   * @returns the IRI that are referenced from this shape with sh:nodeKind
+   */
+  getShNodeKind(): Resource {
+    return this.graph.readSingleProperty(
+      this.resource,
+      SH.NODE_KIND,
+    ) as Resource;
+  }
 
-    /**
-     * @returns the value of sh:codeIdentifier, if any
-     */
-    getShCodeIdentifier(): string | undefined {
-        return this.graph.readSinglePropertyAsString(this.resource, SH.CODE_IDENTIFIER);
-    }
+  /**
+   * @returns the value of sh:codeIdentifier, if any
+   */
+  getShCodeIdentifier(): string | undefined {
+    return this.graph.readSinglePropertyAsString(
+      this.resource,
+      SH.CODE_IDENTIFIER,
+    );
+  }
 
-    /**
-     * @returns the values of sh:intent, if any
-     */
-    getShIntent(lang:string): string[] | undefined {
-        return this.graph.readPropertyInLangAsString(this.resource, SH.INTENT, lang);
-    }
+  /**
+   * @returns the values of sh:intent, if any
+   */
+  getShIntent(lang: string): string[] | undefined {
+    return this.graph.readPropertyInLangAsString(
+      this.resource,
+      SH.INTENT,
+      lang,
+    );
+  }
 
-    /**
-     * @returns the values of sh:agentInstruction, if any
-     */
-    getShAgentInstruction(lang:string): string[] | undefined {
-        return this.graph.readPropertyInLangAsString(this.resource, SH.AGENT_INSTRUCTION, lang);
-    }
+  /**
+   * @returns the values of sh:agentInstruction, if any
+   */
+  getShAgentInstruction(lang: string): string[] | undefined {
+    return this.graph.readPropertyInLangAsString(
+      this.resource,
+      SH.AGENT_INSTRUCTION,
+      lang,
+    );
+  }
 
-    /**
-     * @returns the IRI that are referenced from this shape with sh:datatype, as DatatypeIfc instances
-     * @throws if the datatype is not a NamedNode
-     */
-    getShDatatype(): DatatypeIfc[] {
-        return this.graph.readProperty(this.resource, SH.DATATYPE).map(dt => {
-            if(dt.termType !== "NamedNode") {
-                throw new Error("sh:datatype value is not a NamedNode");
-            }
-            return DatatypeRegistry.asDatatype(dt as NamedNode);
-        });
-    }
-
-    /**
-     * @returns the shapes contained in the sh:or list, if any
-     */
-    getShOr():Resource[] {
-      return this.graph.readAsList(this.resource, SH.OR).map(r => ResourceFactory.fromTerm(r)) as Resource[];
-    }
-
-    /**
-     * @returns the pattern defined with sh:pattern, if any
-     */
-    getShPattern(): Literal | undefined{
-        return this.graph.readSingleProperty(this.resource, SH.PATTERN) as Literal;
-    }
-
-    /**
-     * This is defined as this level so that it is accessible from the sh:or when reading the sh:or of PropertyShapes
-     * @returns the values of dash:searchWidget, if any
-     */
-    getDashSearchWidget(): Resource[] {
-        return this.graph.readProperty(this.resource, DASH.SEARCH_WIDGET).map(r => ResourceFactory.fromTerm(r)) as Resource[];
-    }
-
-    /**
-     * @param lang the language for which to read a display label
-     * @returns a display name for this shape in the specified language (subclasses can override to read e.g. sh:name on property)
-     */
-    getLabel(lang:string): string | undefined {
-      // read an rdfs:label in the requested language
-      let label = this.graph.readSinglePropertyInLang(this.resource, RDFS.LABEL, lang)?.value;
-
-      // or try to read the local part of the URI, but should not happen
-      if(!label) {
-        label = Model.getLocalName(this.resource.value) as string;
+  /**
+   * @returns the IRI that are referenced from this shape with sh:datatype, as DatatypeIfc instances
+   * @throws if the datatype is not a NamedNode
+   */
+  getShDatatype(): DatatypeIfc[] {
+    return this.graph.readProperty(this.resource, SH.DATATYPE).map((dt) => {
+      if (dt.termType !== "NamedNode") {
+        throw new Error("sh:datatype value is not a NamedNode");
       }
+      return DatatypeRegistry.asDatatype(dt as NamedNode);
+    });
+  }
 
-      return label;
+  /**
+   * @returns the shapes contained in the sh:or list, if any
+   */
+  getShOr(): Resource[] {
+    return this.graph
+      .readAsList(this.resource, SH.OR)
+      .map((r) => ResourceFactory.fromTerm(r)) as Resource[];
+  }
+
+  /**
+   * @returns the pattern defined with sh:pattern, if any
+   */
+  getShPattern(): Literal | undefined {
+    return this.graph.readSingleProperty(this.resource, SH.PATTERN) as Literal;
+  }
+
+  /**
+   * This is defined as this level so that it is accessible from the sh:or when reading the sh:or of PropertyShapes
+   * @returns the values of dash:searchWidget, if any
+   */
+  getDashSearchWidget(): Resource[] {
+    return this.graph
+      .readProperty(this.resource, DASH.SEARCH_WIDGET)
+      .map((r) => ResourceFactory.fromTerm(r)) as Resource[];
+  }
+
+  /**
+   * @param lang the language for which to read a display label
+   * @returns a display name for this shape in the specified language (subclasses can override to read e.g. sh:name on property)
+   */
+  getLabel(lang: string): string | undefined {
+    // read an rdfs:label in the requested language
+    let label = this.graph.readSinglePropertyInLang(
+      this.resource,
+      RDFS.LABEL,
+      lang,
+    )?.value;
+
+    // or try to read the local part of the URI, but should not happen
+    if (!label) {
+      label = Model.getLocalName(this.resource.value) as string;
     }
 
-    /**
-     * @returns true if the shape is deactivated (sh:deactivated true^^xsd:boolean)
-     */
-    isDeactivated(): boolean {
-      return this.graph.hasTriple(this.resource, SH.DEACTIVATED, factory.literal("true", XSD.BOOLEAN));
-    }
+    return label;
+  }
 
-    /**
-     * @returns this list of values defined in sh:in, if any, otherwise undefined
-     */
-    getShIn():Term[] | undefined {
-      let values:Term[] = this.graph.readAsList(this.resource, SH.IN);
-      return (values.length > 0) ? values : undefined;
-    }
+  /**
+   * @returns true if the shape is deactivated (sh:deactivated true^^xsd:boolean)
+   */
+  isDeactivated(): boolean {
+    return this.graph.hasTriple(
+      this.resource,
+      SH.DEACTIVATED,
+      factory.literal("true", XSD.BOOLEAN),
+    );
+  }
 
-    /**
-     * @returns The single value defined with sh:hasValue, if any
-     */
-    getShHasValue():Term | undefined {
-      return this.graph.readSingleProperty(this.resource, SH.HAS_VALUE);
-    }
+  /**
+   * @returns this list of values defined in sh:in, if any, otherwise undefined
+   */
+  getShIn(): Term[] | undefined {
+    let values: Term[] = this.graph.readAsList(this.resource, SH.IN);
+    return values.length > 0 ? values : undefined;
+  }
 
+  /**
+   * @returns The single value defined with sh:hasValue, if any
+   */
+  getShHasValue(): Term | undefined {
+    return this.graph.readSingleProperty(this.resource, SH.HAS_VALUE);
+  }
 
+  /**
+   * Note that this is defined here so that it can be used on NodeShapes inside inner sh:or of PropertyShapes
+   * @returns the search widget for this property, based on datatype and count
+   */
+  getDefaultSearchWidget(): SearchWidgetIfc {
+    let highest: SearchWidgetIfc = new ListWidget();
+    let highestScore: number = 0;
 
-    /**
-     * Note that this is defined here so that it can be used on NodeShapes inside inner sh:or of PropertyShapes
-     * @returns the search widget for this property, based on datatype and count
-     */
-    getDefaultSearchWidget(): SearchWidgetIfc {
-      let highest:SearchWidgetIfc = new ListWidget();
-      let highestScore:number = 0;
+    // read the range so that it can be passed to the score function
+    // this is needed for list widget, which scores higher if the range is skos:Concept
+    let theRanges: Resource[] = this.resolveShNodeOrShClass();
+    let theRange: Resource | undefined = theRanges.length
+      ? theRanges[0]
+      : undefined;
 
-      // read the range so that it can be passed to the score function
-      // this is needed for list widget, which scores higher if the range is skos:Concept
-      let theRanges:Resource[] = this.resolveShNodeOrShClass();
-      let theRange:Resource|undefined = theRanges.length ? theRanges[0] : undefined;
-
-      for (let index = 0; index < SearchWidgetRegistry.getInstance().getRegistry().length; index++) {
-        const currentWidget = SearchWidgetRegistry.getInstance().getRegistry()[index];
-        if(currentWidget) {
-          let currentScore = currentWidget?.score(this.resource, theRange, this.graph);
-          if(currentScore && currentScore > highestScore) {
-            highestScore = currentScore;
-            highest = currentWidget;
-          }
-        }              
-      }
-
-      return highest;
-    }
-
-    /**
-     * @returns true if sh:nodeKind = sh:Literal, or if sh:datatype is present, or if sh:languageIn / sh:uniqueLang is present
-     */
-    isLiteral(): boolean {
-        var hasNodeKindLiteral = this.graph.hasTriple(this.resource, SH.NODE_KIND, SH.LITERAL);
-        var hasDatatype = this.graph.hasTriple(this.resource, SH.DATATYPE, null);
-        var hasLanguageIn = this.graph.hasTriple(this.resource, SH.LANGUAGE_IN, null);
-        var hasUniqueLang = this.graph.hasTriple(this.resource, SH.UNIQUE_LANG, null);
-
-        return hasNodeKindLiteral || hasDatatype || hasLanguageIn || hasUniqueLang;
-    }
-
-    /**
-     * @returns true if sh:nodeKind = sh:BlankNode
-     */
-    isBlankNode(): boolean {
-        var hasNodeKindBlankNode = this.graph.hasTriple(this.resource, SH.NODE_KIND, SH.BLANK_NODE);
-
-        return hasNodeKindBlankNode;
-    }
-
-
-    /**
-     * @returns the shapes that are the range of this shape, either from sh:node or from sh:class/^sh:targetClass
-     * Note that sh:node has precedence over sh:class : if sh:node is found, no need to look for sh:class
-     */
-    resolveShNodeOrShClass():Resource[] {         
-      var ranges: Resource[] = [];
-
-      // read the sh:node
-      const shnodeQuads = this.graph.readProperty(
-        this.resource,
-        SH.NODE
-      ).forEach((q:Quad_Object) => {
-        ranges.push(q as Resource);
-      });  
-
-      // sh:node has precedence over sh:class : if sh:node is found, no need to look for sh:class
-      if(ranges.length == 0) {
-        // read the sh:class
-        const shclassQuads = this.graph.readProperty(
+    for (
+      let index = 0;
+      index < SearchWidgetRegistry.getInstance().getRegistry().length;
+      index++
+    ) {
+      const currentWidget =
+        SearchWidgetRegistry.getInstance().getRegistry()[index];
+      if (currentWidget) {
+        let currentScore = currentWidget?.score(
           this.resource,
-          SH.CLASS
+          theRange,
+          this.graph,
         );
-
-        // then for each of them, find all NodeShapes targeting this class
-        shclassQuads.forEach((o:Quad_Object) => {
-            this.graph.findSubjectsOf(
-                SH.TARGET_CLASS,
-                o
-            ).forEach((q:Quad_Subject) => {
-                ranges.push(q as Resource);
-            });
-
-            // also look for nodeshapes that have directly this URI and that are themselves classes
-            // and nodeshapes
-            if(this.graph.hasTriple(
-              o as Resource,
-              RDF.TYPE,
-              RDFS.CLASS,
-            )) {
-              if(this.graph.hasTriple(
-                o as Resource,
-                RDF.TYPE,
-                SH.NODE_SHAPE,
-              )) {
-                ranges.push(o as Resource);
-              }
-            }
-        });
+        if (currentScore && currentScore > highestScore) {
+          highestScore = currentScore;
+          highest = currentWidget;
+        }
       }
-      
-      return ranges;
     }
 
-    static sort(items: Shape[], lang:string) {  
-      let comparator:ShapeOrderOrLabelComparator = new ShapeOrderOrLabelComparator(lang);
-      // sort according to order or label
-      items.sort(comparator.compare);
-      return items;
+    return highest;
+  }
+
+  /**
+   * @returns true if sh:nodeKind = sh:Literal, or if sh:datatype is present, or if sh:languageIn / sh:uniqueLang is present
+   */
+  isLiteral(): boolean {
+    var hasNodeKindLiteral = this.graph.hasTriple(
+      this.resource,
+      SH.NODE_KIND,
+      SH.LITERAL,
+    );
+    var hasDatatype = this.graph.hasTriple(this.resource, SH.DATATYPE, null);
+    var hasLanguageIn = this.graph.hasTriple(
+      this.resource,
+      SH.LANGUAGE_IN,
+      null,
+    );
+    var hasUniqueLang = this.graph.hasTriple(
+      this.resource,
+      SH.UNIQUE_LANG,
+      null,
+    );
+
+    return hasNodeKindLiteral || hasDatatype || hasLanguageIn || hasUniqueLang;
+  }
+
+  /**
+   * @returns true if sh:nodeKind = sh:BlankNode
+   */
+  isBlankNode(): boolean {
+    var hasNodeKindBlankNode = this.graph.hasTriple(
+      this.resource,
+      SH.NODE_KIND,
+      SH.BLANK_NODE,
+    );
+
+    return hasNodeKindBlankNode;
+  }
+
+  /**
+   * @returns the shapes that are the range of this shape, either from sh:node or from sh:class/^sh:targetClass
+   * Note that sh:node has precedence over sh:class : if sh:node is found, no need to look for sh:class
+   */
+  resolveShNodeOrShClass(): Resource[] {
+    var ranges: Resource[] = [];
+
+    // read the sh:node
+    const shnodeQuads = this.graph
+      .readProperty(this.resource, SH.NODE)
+      .forEach((q: Quad_Object) => {
+        ranges.push(q as Resource);
+      });
+
+    // sh:node has precedence over sh:class : if sh:node is found, no need to look for sh:class
+    if (ranges.length == 0) {
+      // read the sh:class
+      const shclassQuads = this.graph.readProperty(this.resource, SH.CLASS);
+
+      // then for each of them, find all NodeShapes targeting this class
+      shclassQuads.forEach((o: Quad_Object) => {
+        this.graph
+          .findSubjectsOf(SH.TARGET_CLASS, o)
+          .forEach((q: Quad_Subject) => {
+            ranges.push(q as Resource);
+          });
+
+        // also look for nodeshapes that have directly this URI and that are themselves classes
+        // and nodeshapes
+        if (this.graph.hasTriple(o as Resource, RDF.TYPE, RDFS.CLASS)) {
+          if (this.graph.hasTriple(o as Resource, RDF.TYPE, SH.NODE_SHAPE)) {
+            ranges.push(o as Resource);
+          }
+        }
+      });
     }
+
+    return ranges;
+  }
+
+  static sort(items: Shape[], lang: string) {
+    let comparator: ShapeOrderOrLabelComparator =
+      new ShapeOrderOrLabelComparator(lang);
+    // sort according to order or label
+    items.sort(comparator.compare);
+    return items;
+  }
+
+  /**
+   * Returns a comparator function for sorting Shapes by sh:order then by label
+   * @param lang the language for label comparison
+   * @returns a comparator function
+   */
+  static compare(lang: string): (a: Shape, b: Shape) => number {
+    const comparator = new ShapeOrderOrLabelComparator(lang);
+    return (a: Shape, b: Shape) => comparator.compare(a, b);
+  }
 }
 
 class ShapeOrderOrLabelComparator {
-  lang:string;
+  lang: string;
 
-  constructor(lang:string) {
+  constructor(lang: string) {
     this.lang = lang;
   }
 
   compare(item1: Shape, item2: Shape) {
-  
     var order1 = item1.getShOrder();
     var order2 = item2.getShOrder();
 
@@ -307,19 +361,19 @@ class ShapeOrderOrLabelComparator {
         if (order1 == order2) {
           let label1 = item1.getLabel(this.lang);
           let label2 = item2.getLabel(this.lang);
-          if(!label1) {
+          if (!label1) {
             return -1;
           }
-          if(!label2) {
+          if (!label2) {
             return 1;
           }
           return label1.localeCompare(label2);
         } else {
           // if the order is actually a number, convert it to number and use a number conversion
-          if(!isNaN(Number(order1.value)) && !isNaN(Number(order2.value))) {
+          if (!isNaN(Number(order1.value)) && !isNaN(Number(order2.value))) {
             return Number(order1.value) - Number(order2.value);
           } else {
-            return (order1.value > order2.value) ? 1 : -1;
+            return order1.value > order2.value ? 1 : -1;
           }
         }
       } else {
@@ -332,14 +386,14 @@ class ShapeOrderOrLabelComparator {
         // no order, sort by label
         let label1 = item1.getLabel(this.lang);
         let label2 = item2.getLabel(this.lang);
-        if(!label1) {
+        if (!label1) {
           return -1;
         }
-        if(!label2) {
+        if (!label2) {
           return 1;
         }
         return label1.localeCompare(label2);
       }
     }
-  };
+  }
 }

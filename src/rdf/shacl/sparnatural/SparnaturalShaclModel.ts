@@ -3,6 +3,7 @@ import { ShapeFactory } from "../ShaclFactory";
 import { StatisticsReader } from "../StatisticsReader";
 import { Dag, DagIfc, DagNodeIfc } from "../dag/Dag";
 import { SparnaturalNodeShape } from "./SparnaturalNodeShape";
+import { Shape } from "../Shape";
 import { SH } from "../../vocabularies/SH";
 import { DataFactory } from "rdf-data-factory";
 import type { NodeShape } from "../NodeShape";
@@ -45,7 +46,7 @@ export class SparnaturalShaclModel {
             ) as NodeShape,
           );
           return (
-            childShape.isDeactivated() ||
+            childShape.getNodeShape().isDeactivated() ||
             entities.find((e) => e.getId() === child) !== undefined
           );
         });
@@ -61,7 +62,7 @@ export class SparnaturalShaclModel {
             ) as NodeShape,
           );
           if (
-            !childShape.isDeactivated() &&
+            !childShape.getNodeShape().isDeactivated() &&
             !entities.find((e) => e.getId() === child)
           ) {
             childrenToAdd.push(childShape);
@@ -120,8 +121,11 @@ export class SparnaturalShaclModel {
       }
     });
 
-    // sort tree
-    dag.sort(SparnaturalNodeShape.compare(lang));
+    // sort tree using Shape's comparator on underlying NodeShapes
+    const shapeCompare = Shape.compare(lang);
+    dag.sort((a: SparnaturalNodeShape, b: SparnaturalNodeShape) => {
+      return shapeCompare(a.getNodeShape(), b.getNodeShape());
+    });
 
     return dag;
   }
@@ -155,11 +159,14 @@ export class SparnaturalShaclModel {
             ) as NodeShape,
           ),
       )
-      .filter((sns) => !sns.isDeactivated())
+      .filter((sns) => !sns.getNodeShape().isDeactivated())
       .filter((sns) => sns.getValidProperties().length > 0);
 
-    // sort
-    entities.sort(SparnaturalNodeShape.compare(lang));
+    // sort using Shape's comparator on underlying NodeShapes
+    const shapeCompare = Shape.compare(lang);
+    entities.sort((a: SparnaturalNodeShape, b: SparnaturalNodeShape) => {
+      return shapeCompare(a.getNodeShape(), b.getNodeShape());
+    });
 
     return entities;
   }
