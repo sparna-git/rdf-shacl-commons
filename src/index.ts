@@ -6,10 +6,18 @@ export * from "./rdf/shacl/NodeShape";
 export * from "./rdf/shacl/PropertyShape";
 export * from "./rdf/shacl/SearchWidgets";
 export * from "./rdf/shacl/ShaclModel";
+export * from "./rdf/shacl/PropertyPath";
 export * from "./rdf/shacl/ShaclFactory";
 export * from "./rdf/shacl/ShaclSparqlPostProcessor";
 export * from "./rdf/shacl/Shape";
 export * from "./rdf/shacl/StatisticsReader";
+
+export * from "./rdf/shacl/dag/Dag";
+
+export * from "./rdf/shacl/sparnatural/SparnaturalNodeShape";
+export * from "./rdf/shacl/sparnatural/SparnaturalPropertyShape";
+export * from "./rdf/shacl/sparnatural/SparnaturalShaclModel";
+export * from "./rdf/shacl/sparnatural/SparnaturalShapeFactory";
 
 export * from "./io/LocalCacheData";
 export * from "./io/LocalDataStorage";
