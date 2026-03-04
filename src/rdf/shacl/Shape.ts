@@ -220,6 +220,16 @@ export class Shape {
     }
 
     /**
+     * @returns true if sh:nodeKind = sh:BlankNode
+     */
+    isBlankNode(): boolean {
+        var hasNodeKindBlankNode = this.graph.hasTriple(this.resource, SH.NODE_KIND, SH.BLANK_NODE);
+
+        return hasNodeKindBlankNode;
+    }
+
+
+    /**
      * @returns the shapes that are the range of this shape, either from sh:node or from sh:class/^sh:targetClass
      * Note that sh:node has precedence over sh:class : if sh:node is found, no need to look for sh:class
      */

@@ -6,6 +6,7 @@ const SH_NAMESPACE = "http://www.w3.org/ns/shacl#";
 export const SH = {
   AGENT_INSTRUCTION: factory.namedNode(SH_NAMESPACE + "agentInstruction") as NamedNode,   // SHACl 1.2
   ALTERNATIVE_PATH: factory.namedNode(SH_NAMESPACE + "alternativePath") as NamedNode,
+  BLANK_NODE: factory.namedNode(SH_NAMESPACE + "BlankNode") as NamedNode,
   CLASS: factory.namedNode(SH_NAMESPACE + "class") as NamedNode,
   CODE_IDENTIFIER: factory.namedNode(SH_NAMESPACE + "codeIdentifier") as NamedNode,   // SHACl 1.2
   DATATYPE: factory.namedNode(SH_NAMESPACE + "datatype") as NamedNode,
