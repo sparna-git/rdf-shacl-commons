@@ -52,7 +52,7 @@ export class ShaclSparqlPostProcessor {
           let sparqlReplacementString = this.shaclModel.pathToSparql(quad.object);
           sparql = sparql.replace(re, sparqlReplacementString);
         } catch (error) {
-          console.error("Unsupported sh:path for "+quad.subject.value+" - review your configuration");
+          console.error("Unsupported sh:path for "+quad.subject.value+" - review your configuration.");
         }
       });
 

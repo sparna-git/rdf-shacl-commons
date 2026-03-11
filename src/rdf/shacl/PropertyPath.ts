@@ -91,6 +91,6 @@ export class PropertyPath {
               }
           }
       }
-      throw new Error("Unsupported SHACL property path");
+      throw new Error("Unsupported SHACL property path termType "+this.resource.termType);
   }
 }
