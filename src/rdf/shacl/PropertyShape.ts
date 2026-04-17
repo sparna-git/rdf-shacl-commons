@@ -16,7 +16,7 @@ import { ShapeFactory } from './ShaclFactory';
 import type { NodeShape } from './NodeShape';
 import { PropertyPath } from './PropertyPath';
 import { OWL } from '../vocabularies/OWL';
-import { XSD } from '../..';
+import { DASH, XSD } from '../..';
 
 const factory = new DataFactory();
 
@@ -87,6 +87,18 @@ export class PropertyShape extends Shape {
             .map(node => ShapeFactory.buildShape(node, this.graph) as NodeShape)[0];
 
       return qvs;
+    }
+
+    /**
+     * @returns the dash:propertyRoles of this property shape, otherwise an empty array if not defined
+     */
+    getDashPropertyRoles(): Resource[] {
+      let roles:Resource[] = this.graph.readProperty(this.resource, DASH.PROPERTY_ROLE) as Resource[];
+      return roles;
+    }
+
+    hasDashPropertyRole(role: Resource): boolean {
+      return this.getDashPropertyRoles().some(r => r.equals(role));
     }
 
     /**

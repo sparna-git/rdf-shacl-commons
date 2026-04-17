@@ -1,4 +1,4 @@
-import { DataFactory } from "rdf-data-factory";
+import { DataFactory, NamedNode } from "rdf-data-factory";
 import { Quad_Subject, Term } from "@rdfjs/types";
 
 import { Shape } from "./Shape";
@@ -65,7 +65,7 @@ export class NodeShape extends Shape {
   }
 
   /**
-   * @returns all values of sh:property on this entity
+   * @returns all values of sh:property on this entity (without inheritance from the parent node shapes)
    */
   getShProperty(): PropertyShape[] {
     return this.graph
@@ -204,19 +204,34 @@ export class NodeShape extends Shape {
     return dedupShapes;
   }
 
-  hasPropertyShapeForPath(path: Term): boolean {
+
+  findPropertyShapesByPath(path: Term): PropertyShape[] {
     // use the serialized SPARQL alue of the path for comparison
     let sparqlPath = new PropertyPath(path, this.graph).toSparql();
 
     let properties: PropertyShape[] = this.getProperties();
-    for (const p of properties) {
+    return properties.filter((p) => {
       let pPath = p.getShPath();
       let pSparqlPath = new PropertyPath(pPath!, this.graph).toSparql();
-      if (pSparqlPath === sparqlPath) {
-        return true;
-      }
-    }
-    return false;
+      return pSparqlPath === sparqlPath;
+    });
+  }
+
+  /**
+   * @param role role to look for, e.g. DASH.LABEL_ROLE or DASH.KEY_INFO_ROLE etc.
+   * @returns all property shapes of this node shape (including inherited ones) that have the provided dash:propertyRole
+   */
+  findPropertyShapesByDashPropertyRole(role: Resource): PropertyShape[] {
+    let properties: PropertyShape[] = this.getProperties();
+    return properties.filter((p) => p.hasDashPropertyRole(role));
+  }
+
+  /**
+   * @param path 
+   * @returns true if this node shape has a property shape with the provided path
+   */
+  hasPropertyShapeForPath(path: Term): boolean {
+    return this.findPropertyShapesByPath(path).length > 0;
   }
 
   /**
@@ -226,19 +241,11 @@ export class NodeShape extends Shape {
     var items: Resource[] = [];
 
     // read all properties
-    let propShapes = this.graph.readProperty(this.resource, SH.PROPERTY);
-
-    propShapes.forEach((ps) => {
-      if (
-        this.graph.hasTriple(
-          ps as Resource,
-          DASH.PROPERTY_ROLE,
-          DASH.LABEL_ROLE,
-        )
-      ) {
-        items.push(ps as Resource);
-      }
-    });
+    let labelRolesProperties = this.findPropertyShapesByDashPropertyRole(DASH.LABEL_ROLE);
+    if(labelRolesProperties.length > 0) {
+      // if we have some, we take the first one (should not be more than one)
+      return labelRolesProperties[0];
+    }
 
     // nothing found, see if we can inherit it
     if (items.length == 0) {
@@ -256,7 +263,7 @@ export class NodeShape extends Shape {
 
     if (items.length == 0) {
       // nothing found, check for SKOS.PREF_LABEL, FOAF.NAME, SCHEMA.NAME, DCTERMS.TITLE, RDFS.LABEL
-      const PROPERTIES_TO_CHECK = [
+      const PROPERTIES_TO_CHECK : NamedNode[] = [
         SKOS.PREF_LABEL,
         FOAF.NAME,
         SCHEMA.NAME,
@@ -267,11 +274,10 @@ export class NodeShape extends Shape {
       for (let i = 0; i < PROPERTIES_TO_CHECK.length; i++) {
         let prop = PROPERTIES_TO_CHECK[i];
 
-        propShapes.forEach((ps) => {
-          if (this.graph.hasTriple(ps as Resource, SH.PATH, prop!)) {
-            items.push(ps as Resource);
-          }
-        });
+        let propertyShapes = this.findPropertyShapesByPath(prop!);
+        if(propertyShapes.length > 0) {
+          items.push(...propertyShapes.map(ps => ps.getResource()));
+        }
 
         if (items.length > 0) {
           // break as soon as we find something
