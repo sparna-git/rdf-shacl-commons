@@ -19,6 +19,8 @@ export * from "./rdf/shacl/sparnatural/SparnaturalPropertyShape";
 export * from "./rdf/shacl/sparnatural/SparnaturalShaclModel";
 export * from "./rdf/shacl/sparnatural/SparnaturalShapeFactory";
 
+export * from "./rdf/Resource";
+
 export * from "./io/LocalCacheData";
 export * from "./io/LocalDataStorage";
 export * from "./io/UrlFetcher";
