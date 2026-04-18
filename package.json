@@ -1,6 +1,6 @@
 {
   "name": "rdf-shacl-commons",
-  "version": "0.3.0",
+  "version": "0.3.4",
   "description": "An RDF and SHACL typescript utility package",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -20,7 +20,7 @@
     "clean": "rm -rf dist",
     "build:lib": "tsc",
     "build:bundle": "webpack --config webpack.config.js --mode production",
-    "build": "npm run clean && npm run build:lib",
+    "build": "npm run clean && npm test && npm run build:lib",
     "start": "webpack serve --hot --config webpack.config.js --mode development",
     "test": "jest",
     "test:watch": "jest --watch"
