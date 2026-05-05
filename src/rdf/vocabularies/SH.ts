@@ -28,6 +28,7 @@ export const SH = {
   NODE: factory.namedNode(SH_NAMESPACE + "node") as NamedNode,
   NODE_KIND: factory.namedNode(SH_NAMESPACE + "nodeKind") as NamedNode,
   NODE_SHAPE: factory.namedNode(SH_NAMESPACE + "NodeShape") as NamedNode,
+  SHAPES_GRAPH: factory.namedNode(SH_NAMESPACE + "ShapesGraph") as NamedNode,
   ONE_OR_MORE_PATH: factory.namedNode(SH_NAMESPACE + "oneOrMorePath") as NamedNode,
   OR: factory.namedNode(SH_NAMESPACE + "or") as NamedNode,
   ORDER: factory.namedNode(SH_NAMESPACE + "order") as NamedNode,

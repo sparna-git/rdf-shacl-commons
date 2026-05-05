@@ -10,6 +10,7 @@ export * from "./rdf/shacl/PropertyPath";
 export * from "./rdf/shacl/ShaclFactory";
 export * from "./rdf/shacl/ShaclSparqlPostProcessor";
 export * from "./rdf/shacl/Shape";
+export * from "./rdf/shacl/ShapesGraph";
 export * from "./rdf/shacl/StatisticsReader";
 
 export * from "./rdf/shacl/dag/Dag";
