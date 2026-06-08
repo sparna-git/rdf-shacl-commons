@@ -90,11 +90,21 @@ export class NodeShape extends Shape {
           this.resource,
           SH.TARGET_CLASS,
         );
+
+        // try skos:prefLabel on the target class first
         label = this.graph.readSinglePropertyInLang(
           targetClass as Term,
-          RDFS.LABEL,
+          SKOS.PREF_LABEL,
           lang,
         )?.value;
+
+        if (!label) {
+          label = this.graph.readSinglePropertyInLang(
+            targetClass as Term,
+            RDFS.LABEL,
+            lang,
+          )?.value;
+        }
       }
     }
 
