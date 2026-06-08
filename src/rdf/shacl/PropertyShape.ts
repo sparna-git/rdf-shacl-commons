@@ -116,12 +116,19 @@ export class PropertyShape extends Shape {
         if(this.graph.hasTriple(this.resource,SH.PATH, null)) {
           let thePath = this.getShPath();
           if(thePath.termType === "NamedNode") {
-            // try to read the rdfs:label of the property itself
-            // note that we try to read an rdfs:label event in case the path is a blank node, e.g. sequence path
+            // try to read the skos:prefLabel of the property itself
             label = this.graph.readSinglePropertyInLang(
               thePath,
-              RDFS.LABEL, 
+              SKOS.PREF_LABEL, 
               lang)?.value;
+
+            if(!label) {
+              // try to read the rdfs:label of the property itself
+              label = this.graph.readSinglePropertyInLang(
+                thePath,
+                RDFS.LABEL, 
+                lang)?.value;
+            }
           } else if(new PropertyPath(thePath, this.graph).isInversePath()) {
             let inversePath = new PropertyPath(thePath, this.graph).getInversePath();
             if(inversePath && inversePath.termType === "NamedNode") {
